@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const axiosPublic = axios.create({
-    baseURL: 'https://destin-server.onrender.com'
-})
+    baseURL: 'http://localhost:3000/api/v1/',
+});
 
 const useAxiosPublic = () => {
     return axiosPublic;

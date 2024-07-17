@@ -1,50 +1,30 @@
 import { createBrowserRouter } from "react-router-dom";
-import useAxiosPublic from "../hooks/useAxiosPublic";
-import Main from "../Layout/Main";
-import Home from "../pages/Home";
-import LoginPage from "../pages/auth_pages/Login";
-import RegistrationPage from "../pages/auth_pages/Registration";
-import UserProfile from "../pages/user_pages/UserProfile";
+
+
 import PrivateRoute from "./PrivateRoute";
 import Dashboard from "../Layout/Dasboard";
+import Login from "../pages/auth_pages/Login";
+import RegistrationPage from "../pages/auth_pages/Registration";
 
-const axiosPublic = useAxiosPublic();
+
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Main />,
-    children: [
-      {
-        path: "/",
-        element: <Home />,
-      },
-      {
-        path: "/login",
-        element: <LoginPage />,
-      },
-      {
-        path: "/signup",
-        element: <RegistrationPage />,
-      },
-    ],
+    element: (
+        <Dashboard />
+    ),
   },
   {
-    path: "/user",
-    element: (
-      <PrivateRoute>
-        <Dashboard />
-      </PrivateRoute>
-    ),
-    children: [
-      {
-        path: "profile",
-        element: (
-          <PrivateRoute>
-            <UserProfile />
-          </PrivateRoute>
-        ),
-      },
-    ],
+    path: '/login',
+    element: <Login />,
   },
+  {
+    path: '/register',
+    element: <RegistrationPage/>
+  }
 ]);
+
+
+{/* <PrivateRoute>
+</PrivateRoute> */}

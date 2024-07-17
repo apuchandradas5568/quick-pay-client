@@ -1,85 +1,142 @@
-import React, { useContext, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+// src/pages/RegistrationPage.js
+import React, { useContext, useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import { toast } from "react-toast";
 
 const RegistrationPage = () => {
+  const [role, setRole] = useState("User");
+  const [name, setName] = useState("");
+  const [pin, setPin] = useState("");
+  const [mobileNumber, setMobileNumber] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const axiosPublic = useAxiosPublic();
+  const navigate  = useNavigate()
 
-  const location = useLocation();
+  const { user } = useContext(AuthContext);
 
-  const { createUser } = useContext(AuthContext);
-  const navigate = useNavigate();
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleRegister = async () => {
+    setLoading(true);
+    const registrationData = {
+      role,
+      name,
+      pin,
+      mobileNumber,
+      email,
+    };
+
+    if (name === "" || mobileNumber === "" || email === "") {
+      return toast.error("All fields are required");
+    }
+    if (pin.length > 5) {
+      return toast.error("Pin must be 5 digit");
+    }
+
+    try {
+      await axiosPublic
+        .post("users/register", registrationData)
+        .then((res) => {
+          toast.success(res.data.message);
+          navigate('/login')
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
 
     // Implement registration logic here
-    await createUser(email, password)
-      .then((res) => {
-        navigate(location.state?.from ? location.state.from : "/");
-
-        toast.success("Registration successful");
-      })
-      .catch(() => {
-        toast.error("Registration failed");
-      });
-
-    setEmail("");
-    setPassword("");
+    setLoading(false);
   };
 
   return (
-    <div className="register-container max-w-md mx-auto p-4 mt-10 ">
-      <h1 className="text-3xl font-bold text-center mb-4">Join Destin</h1>
-      <p className="text-center mb-12 ">Find your perfect match.</p>
+    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+      <div className="max-w-md w-full bg-white rounded-lg shadow p-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          Registration
+        </h1>
 
-      <form id="register-form" onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="email" className="block  font-bold mb-2">
-            Email Address
-          </label>
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="User">User</option>
+            <option value="Agent">Agent</option>
+          </select>
+        </div>
+
+        <div className="mb-4">
           <input
+            required
+            type="text"
+            placeholder="Name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="mb-4">
+          <input
+            required
+            type="number"
+            placeholder="5-digit PIN"
+            value={pin}
+            maxLength={5}
+            onChange={(e) => setPin(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="mb-4">
+          <input
+            required
+            type="text"
+            placeholder="Mobile Number"
+            value={mobileNumber}
+            onChange={(e) => setMobileNumber(e.target.value)}
+            maxLength={11}
+            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div className="mb-4">
+          <input
+            required
             type="email"
-            id="email"
-            name="email"
-            placeholder="youremail@example.com"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500"
-            required
+            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-        <div className="mb-4">
-          <label htmlFor="password" className="block  font-bold mb-2">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500"
-            required
-          />
-        </div>
+
         <button
-          type="submit"
-          className="w-full py-2 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-md shadow-sm"
+          disabled={loading}
+          onClick={handleRegister}
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
         >
           Register
         </button>
-      </form>
 
-      <p className="text-center mt-8">
-        Already have an account?{" "}
-        <Link className="text-orange-600" to="/login">
-          Login Here
-        </Link>
-      </p>
+        <div className="justify-center flex flex-row gap-2 w-full mt-4">
+          <span>Already have an account?</span>
+          <Link className="text-blue-500 font-semibold " to={"/login"}>
+            Login
+          </Link>
+        </div>
+      </div>
     </div>
   );
 };

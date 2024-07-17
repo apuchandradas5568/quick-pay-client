@@ -1,113 +1,89 @@
-import React, { useContext, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+// src/pages/LoginPage.js
+import React, { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
+import toast from "react-hot-toast";
 import { AuthContext } from "../../context/AuthContext";
-import { toast } from "react-toast";
 
 const LoginPage = () => {
-  const { signIn, user, googleSignIn } = useContext(AuthContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const location = useLocation();
+  const [identifier, setIdentifier] = useState("");
+  const [pin, setPin] = useState("");
+  const axiosPublic = useAxiosPublic();
   const navigate = useNavigate();
+  const { setUser, user } = useContext(AuthContext);
 
-  if (user) {
-    return navigate("/");
-  }
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, []);
 
-    signIn(email, password)
-      .then((res) => {
-        navigate(location.state?.from ? location.state.from : "/");
-        toast.success("Login successful");
-      })
-      .catch(() => {
-        toast.error("Login failed");
-      });
-    setEmail("");
-    setPassword("");
-  };
+  const handleLogin = async () => {
+    const loginData = {
+      identifier,
+      pin,
+    };
 
-  const handleGoogleLogin = () => {
-    googleSignIn()
-      .then(() => {
-        toast.success("Login successful");
-      })
-      .catch(() => {
-        toast.error("Login failed");
-      });
-
-    // Implement Google login logic here
-
-    // Send email and password to your server for authentication
-    // Handle successful login or error messages
+    try {
+      await axiosPublic
+        .post("users/login", loginData, {
+          withCredentials: true,
+        })
+        .then((res) => {
+          toast.success(res.data.message);
+          localStorage.setItem("quickPayUser", JSON.stringify(res.data.user));
+          setUser(res.data.user);
+          navigate("/");
+        })
+        .catch((err) => {
+          toast.error(err.response.data.message);
+        });
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+    // Implement login logic here
   };
 
   return (
-    <div className="login-container max-w-md mx-auto p-4 mt-10 ">
-      <h1 className="text-3xl font-bold text-center mb-4">Welcome to Destin</h1>
-      <p className="text-center mb-12 ">Find your everlasting bond.</p>
+    <div className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+      <div className="max-w-md w-full bg-white rounded-lg shadow p-6">
+        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          Login
+        </h1>
 
-      <form id="login-form" onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="email" className="block  font-bold mb-2">
-            Email Address
-          </label>
           <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="youremail@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500"
-            required
+            type="text"
+            placeholder="Mobile Number or Email"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
         <div className="mb-4">
-          <label htmlFor="password" className="block  font-bold mb-2">
-            Password
-          </label>
           <input
             type="password"
-            id="password"
-            name="password"
-            placeholder="Enter Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-1 focus:ring-orange-500"
-            required
+            placeholder="5-digit PIN"
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+            className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
         <button
-          type="submit"
-          className="w-full py-2 bg-orange-500 hover:bg-orange-700 text-white font-bold rounded-md shadow-sm"
+          onClick={handleLogin}
+          className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg"
         >
           Login
         </button>
-      </form>
-
-      <hr className="border h-1 border-t-0 border-l-0 border-r-0 border-orange-500 border-dashed mt-8" />
-
-      <div className="social-login mt-8 text-center">
-        <p className="">Or login with</p>
-        <div className="flex justify-center gap-4 mt-4">
-          <button
-            onClick={handleGoogleLogin}
-            className="border-orange-600 hover:bg-orange-600 hover:text-white text-orange-600 border rounded-md py-2 px-4"
-          >
-            Google
-          </button>
+        <div className="justify-center flex flex-row gap-2 w-full mt-4">
+          <span>Don't have an account?</span>
+          <Link className="text-blue-500 font-semibold " to={"/register"}>
+            Register
+          </Link>
         </div>
       </div>
-
-      <p className="text-center  mt-8">
-        Don't have an account?{" "}
-        <Link to="/signup" className="text-orange-600">
-          Register Now
-        </Link>
-      </p>
     </div>
   );
 };

@@ -1,44 +1,24 @@
-import { createContext, useEffect, useState } from "react";
-import {
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-  getAuth,
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  signOut,
-  updateProfile,
-} from "firebase/auth";
-import { app } from "../firebase.config";
-// import useAxiosPublic from "../hooks/useAxiosPublic";
-import axios from "axios";
-import useAxiosPublic from "../hooks/useAxiosPublic";
-import { json } from "react-router-dom";
+import { createContext, useState } from "react";
+
+
 
 export const AuthContext = createContext(null);
 
-const auth = getAuth(app);
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(
-     null
-    );
+    JSON.parse(localStorage.getItem("quickPayUser")) || null
+  );
 
 
   const [loading, setLoading] = useState(true);
-
-  const axiosPublic = useAxiosPublic();
-
-
-
-
 
 
   const authInfo = {
     user,
     setUser,
     loading,
-    setLoading
+    setLoading,
   };
 
   return (
