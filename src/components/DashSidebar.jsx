@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import SidebarItem from "./SidebarItem";
 import {
   FaTachometerAlt,
@@ -21,10 +21,11 @@ const DashSidebar = () => {
   const location = useLocation();
   const [tab, setTab] = useState("");
   const { user } = useContext(AuthContext);
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!user) {
-      return (window.location.href = "/login");
+      return navigate('/login')
     }
   }, [user, axios]);
 
@@ -38,7 +39,7 @@ const DashSidebar = () => {
 
   const logOut = () => {
     localStorage.removeItem("quickPayUser");
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   return (

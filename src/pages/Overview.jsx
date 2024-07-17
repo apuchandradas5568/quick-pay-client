@@ -74,15 +74,15 @@ const Overview = () => {
           <h2 className="text-2xl font-semibold text-gray-700 mb-2">
             Recent Transactions
           </h2>
-          <ul className="text-gray-600">
+          <ul className="text-gray-600 md:max-h-[500px] overflow-y-scroll">
             {transactions?.map((transaction, idx) => (
               <li
                 key={idx}
-                className={`mb-4 p-4 rounded-lg shadow-md ${
+                className={`mb-4 p-4 rounded-lg flex justify-between shadow-md ${
                   idx % 2 === 0 ? "bg-blue-100" : "bg-green-100"
                 } hover:bg-opacity-75 transition duration-300`}
               >
-                <div className="flex justify-between items-center mb-2">
+                <div className="flex gap-8 justify-between items-center mb-2">
                   <span className="font-semibold text-lg">
                     {transaction.type}
                   </span>
