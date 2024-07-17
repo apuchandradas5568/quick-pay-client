@@ -16,13 +16,13 @@ const TransactMoney = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Send Money Section */}
-          {user.role === "User" && <UserTransactPage />}
+          {user?.role === "User" && <UserTransactPage />}
 
           {/* Agent Cash In Section */}
-          {user.role === "Agent" && <AgentTransact />}
+          {user?.role === "Agent" && <AgentTransact />}
           {/* <AgentTransact/> */}
 
-          {user.role === "Admin" && (
+          {user?.role === "Admin" && (
             <>
               <UserTransactPage />
               <AgentTransact />
