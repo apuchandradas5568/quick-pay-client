@@ -20,12 +20,12 @@ import axios from "axios";
 const DashSidebar = () => {
   const location = useLocation();
   const [tab, setTab] = useState("");
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate()
 
   useEffect(() => {
     if (!user) {
-      return navigate('/login')
+       navigate('/login')
     }
   }, [user, axios]);
 
@@ -39,6 +39,7 @@ const DashSidebar = () => {
 
   const logOut = () => {
     localStorage.removeItem("quickPayUser");
+    setUser(null);
     navigate("/login");
   };
 
