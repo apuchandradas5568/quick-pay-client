@@ -110,14 +110,14 @@ const UserManagement = () => {
                     <td className="px-4 py-2 flex flex-col gap-2 items-center justify-center border">
                       {user.status === "active" ? (
                         <button
-                          onClick={() => handleBlock(user._id, user.role)}
+                          onClick={() => handleBlock(user._id, user?.role)}
                           className="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-2 rounded"
                         >
                           Block
                         </button>
                       ) : (
                         <button
-                          onClick={() => handleActivate(user._id, user.role)}
+                          onClick={() => handleActivate(user._id, user?.role)}
                           className="bg-green-500 hover:bg-green-600 text-white font-bold py-1 px-2 rounded"
                         >
                           Activate

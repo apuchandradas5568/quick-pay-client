@@ -55,7 +55,7 @@ const DashSidebar = () => {
             <FaMoneyBill className="mr-2 text-xl " /> Make Transactions
           </SidebarItem>
         </Link>
-        {user.role === "Admin" && (
+        {user?.role === "Admin" && (
           <Link to="/?tab=user-management">
             <SidebarItem active={tab === "user-management" || false}>
               <FaUsers className="mr-2 text-xl " /> Users Management
